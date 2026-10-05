@@ -1,0 +1,227 @@
+<mujoco model="micromouse">
+
+    <option
+        gravity="0 0 -9.81"
+        timestep="0.001"
+        integrator="implicitfast"
+    />
+
+    <visual>
+
+        <!-- White background -->
+        <rgba
+            haze="1 1 1 1"
+        />
+
+        <headlight
+            ambient="0.7 0.7 0.7"
+            diffuse="0.5 0.5 0.5"
+            specular="0 0 0"
+        />
+
+    </visual>
+
+    <worldbody>
+
+        <!-- ================= FLOOR ================= -->
+
+        <geom
+            name="floor"
+            type="plane"
+            size="6 6 0.1"
+            rgba="1 1 1 1"
+            contype="4"
+            conaffinity="2"
+            friction="4 0.005 0.0005"
+        />
+
+        <!-- ================= ROBOT ================= -->
+
+        <body
+            name="robot"
+            pos="0 0 0.06"
+        >
+
+             <inertial
+                pos="0 0 0"
+                mass="0.35"
+                diaginertia="0.003 0.003 0.006"/>
+
+            <joint
+                name="robot_x"
+                type="slide"
+                axis="1 0 0"
+            />
+
+            <joint
+                name="robot_y"
+                type="slide"
+                axis="0 1 0"
+            />
+
+            <joint
+                name="robot_yaw"
+                type="hinge"
+                axis="0 0 1"
+            />
+
+            <!-- ================= CHASSIS ================= -->
+
+            <geom
+                name="chassis"
+                type="box"
+                size="0.10 0.06 0.025"
+                mass="0.20"
+                rgba="0.15 0.35 0.90 1"
+                contype="1"
+                conaffinity="1"
+            />
+
+            <!-- Front direction marker -->
+
+            <geom
+                name="front_marker"
+                type="cylinder"
+                pos="-0.09 0 0.03"
+                size="0.008 0.004"
+                rgba="1 0.5 0 1"
+                contype="0"
+                conaffinity="0"
+            />
+
+            <!-- ================= SENSOR SITES ================= -->
+
+            <!-- Front -->
+
+            <site
+                name="sensor_front"
+                pos="-0.105 0 0.02"
+                euler="0 -90 0"
+                size="0.005"
+                rgba="0 0 1 1"
+            />
+
+            <!-- Left -->
+
+            <site
+                name="sensor_left"
+                pos="0 0.065 0.02"
+                euler="-90 0 0"
+                size="0.005"
+                rgba="1 1 0 1"
+            />
+
+            <!-- Right -->
+
+            <site
+                name="sensor_right"
+                pos="0 -0.065 0.02"
+                euler="90 0 0"
+                size="0.005"
+                rgba="0 1 1 1"
+            />
+
+            <!-- ================= LEFT WHEEL ================= -->
+
+            <body
+                name="left_wheel"
+                pos="0 0.075 -0.03"
+                euler="90 0 0"
+            >
+
+                <joint
+                    name="left_wheel_joint"
+                    type="hinge"
+                    axis="0 0 1"
+                    armature="0.001"
+                    damping="0.8"
+                />
+
+                <geom
+                    name="left_wheel_geom"
+                    type="cylinder"
+                    size="0.03 0.01"
+                    mass="0.025"
+                    rgba="0.15 0.15 0.15 1"
+                    contype="2"
+                    conaffinity="4"
+                    friction="5.0 0.02 0.002"
+                />
+
+            </body>
+
+            <!-- ================= RIGHT WHEEL ================= -->
+
+            <body
+                name="right_wheel"
+                pos="0 -0.075 -0.03"
+                euler="90 0 0"
+            >
+
+                <joint
+                    name="right_wheel_joint"
+                    type="hinge"
+                    axis="0 0 1"
+                    armature="0.001"
+                    damping="0.8"
+                />
+
+                <geom
+                    name="right_wheel_geom"
+                    type="cylinder"
+                    size="0.03 0.01"
+                    mass="0.025"
+                    rgba="0.15 0.15 0.15 1"
+                    contype="2"
+                    conaffinity="4"
+                    friction="5.0 0.02 0.002"
+                />
+
+            </body>
+
+        </body>
+
+    </worldbody>
+
+    <!-- ================= MOTORS ================= -->
+
+    <actuator>
+
+        <motor
+            name="left_motor"
+            joint="left_wheel_joint"
+            gear="0.50"
+            ctrlrange="-5 5"
+        />
+
+        <motor
+            name="right_motor"
+            joint="right_wheel_joint"
+            gear="0.50"
+            ctrlrange="-5 5"
+        />
+
+    </actuator>
+
+    <!-- ================= SENSORS ================= -->
+
+    <sensor>
+
+        <rangefinder
+            name="front_distance"
+            site="sensor_front"
+        />
+
+        <rangefinder
+            name="left_distance"
+            site="sensor_left"
+        />
+
+        <rangefinder
+            name="right_distance"
+            site="sensor_right"
+        />
+
+    </sensor>
+
+</mujoco>

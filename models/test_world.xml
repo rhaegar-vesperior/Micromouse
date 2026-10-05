@@ -1,0 +1,32 @@
+<mujoco model="test_world">
+
+    <option gravity="0 0 -9.81"/>
+
+    <worldbody>
+
+        <!-- Ground -->
+        <geom
+            name="ground"
+            type="plane"
+            size="5 5 0.1"
+            rgba="0.7 0.7 0.7 1"
+        />
+
+        <!-- Falling box -->
+        <body name="box" pos="0 0 1">
+
+            <freejoint/>
+
+            <geom
+                name="box_geom"
+                type="box"
+                size="0.2 0.2 0.2"
+                mass="1"
+                rgba="0.2 0.5 0.9 1"
+            />
+
+        </body>
+
+    </worldbody>
+
+</mujoco>

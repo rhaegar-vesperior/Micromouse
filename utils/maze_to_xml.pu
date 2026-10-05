@@ -1,0 +1,128 @@
+"""
+Generate a MuJoCo maze XML from a Maze object.
+
+This ensures that:
+
+- A* planner
+- MuJoCo simulation
+- Physical maze
+
+all use exactly the same maze.
+"""
+
+from pathlib import Path
+
+from environments.maze import Maze
+
+
+WALL_HEIGHT = 0.12
+WALL_THICKNESS = 0.02
+CELL_SIZE = 0.60
+
+
+def cell_center(row: int, col: int):
+    """
+    Returns world coordinates of the centre of a maze cell.
+    """
+
+    x = col * CELL_SIZE
+    y = -row * CELL_SIZE
+
+    return x, y
+
+
+def wall_position(grid_r, grid_c):
+    """
+    Convert maze-grid coordinates to world coordinates.
+    """
+
+    x = (grid_c - 1) * CELL_SIZE / 2
+    y = -(grid_r - 1) * CELL_SIZE / 2
+
+    return x, y
+
+
+def build_xml(maze: Maze):
+
+    walls = []
+
+    rows, cols = maze.grid.shape
+
+    wall_id = 0
+
+    for r in range(rows):
+
+        for c in range(cols):
+
+            if maze.grid[r, c] == 0:
+                continue
+
+            x, y = wall_position(r, c)
+
+            # Horizontal wall
+
+            if r % 2 == 0:
+
+                size_x = CELL_SIZE / 2 + WALL_THICKNESS
+                size_y = WALL_THICKNESS
+
+            # Vertical wall
+
+            elif c % 2 == 0:
+
+                size_x = WALL_THICKNESS
+                size_y = CELL_SIZE / 2 + WALL_THICKNESS
+
+            else:
+                continue
+
+            walls.append(
+                f"""
+        <geom
+            name="wall_{wall_id}"
+            type="box"
+            pos="{x:.3f} {y:.3f} {WALL_HEIGHT/2:.3f}"
+            size="{size_x:.3f} {size_y:.3f} {WALL_HEIGHT/2:.3f}"
+            rgba="0.15 0.15 0.15 1"
+            friction="1.2 0.02 0.002"
+        />
+"""
+            )
+
+            wall_id += 1
+
+    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+
+<mujoco model="maze">
+
+    <include file="micromouse.xml"/>
+
+    <worldbody>
+
+{''.join(walls)}
+
+    </worldbody>
+
+</mujoco>
+"""
+
+    return xml
+
+
+def save_xml(maze, filename):
+
+    xml = build_xml(maze)
+
+    Path(filename).write_text(xml)
+
+    print(f"Generated {filename}")
+
+
+if __name__ == "__main__":
+
+    maze = Maze()
+
+    save_xml(
+        maze,
+        "models/fixed_maze.xml",
+    )
